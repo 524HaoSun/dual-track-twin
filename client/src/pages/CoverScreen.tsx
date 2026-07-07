@@ -42,6 +42,92 @@ function StepRow({ icon, label, desc, color }: { icon: React.ReactNode; label: s
   );
 }
 
+function BrandMark({ size = 32 }: { size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 48 48" role="img" aria-label="Dual-Track Digital Twin" style={{ display: 'block' }}>
+      <rect width="48" height="48" rx="10" fill="#0D1420" />
+      <rect x="1" y="1" width="46" height="46" rx="9" fill="rgba(14,165,233,0.12)" stroke="rgba(255,255,255,0.12)" />
+      <path d="M12 34V18l10-6 10 6v16" fill="none" stroke="#0EA5E9" strokeWidth="3" strokeLinejoin="round" />
+      <path d="M22 34V23h10v11" fill="none" stroke="#F59E0B" strokeWidth="3" strokeLinejoin="round" />
+      <path d="M12 34h24" stroke="#E8EDF5" strokeWidth="3" strokeLinecap="round" />
+      <path d="M16 20h4M16 25h4M28 20h4" stroke="#E8EDF5" strokeWidth="2" strokeLinecap="round" opacity="0.8" />
+    </svg>
+  );
+}
+
+function HeroTwinVisual() {
+  const bars = [62, 78, 54, 86, 70, 96, 58, 82, 64, 90, 74, 68];
+
+  return (
+    <div style={{ position: 'absolute', inset: 0, overflow: 'hidden', background: 'radial-gradient(circle at 56% 46%, rgba(14,165,233,0.16), transparent 32%), linear-gradient(135deg, #08111C 0%, #101827 50%, #071019 100%)' }}>
+      <div style={{ position: 'absolute', inset: 0, backgroundImage: 'linear-gradient(rgba(14,165,233,0.06) 1px, transparent 1px), linear-gradient(90deg, rgba(14,165,233,0.06) 1px, transparent 1px)', backgroundSize: '42px 42px', opacity: 0.38 }} />
+      <svg viewBox="0 0 900 720" preserveAspectRatio="xMidYMid slice" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%' }}>
+        <defs>
+          <linearGradient id="tower" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor="#60758E" />
+            <stop offset="100%" stopColor="#263241" />
+          </linearGradient>
+          <linearGradient id="glass" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stopColor="#BCEBFF" stopOpacity="0.72" />
+            <stop offset="100%" stopColor="#0EA5E9" stopOpacity="0.18" />
+          </linearGradient>
+          <filter id="glow">
+            <feGaussianBlur stdDeviation="5" result="blur" />
+            <feMerge>
+              <feMergeNode in="blur" />
+              <feMergeNode in="SourceGraphic" />
+            </feMerge>
+          </filter>
+        </defs>
+        <path d="M130 548 C250 490 410 498 548 532 C656 558 760 560 850 532 L850 720 L130 720 Z" fill="#09131E" opacity="0.86" />
+        <path d="M210 526 L210 250 L386 172 L592 262 L592 526 Z" fill="url(#tower)" stroke="#7F91A8" strokeOpacity="0.48" strokeWidth="2" />
+        <path d="M386 172 L386 526" stroke="#96A8BC" strokeOpacity="0.34" strokeWidth="2" />
+        <path d="M210 250 L386 334 L592 262" fill="none" stroke="#9BB0C7" strokeOpacity="0.28" strokeWidth="2" />
+        {Array.from({ length: 7 }, (_, row) =>
+          Array.from({ length: 6 }, (_, col) => (
+            <rect
+              key={`w-${row}-${col}`}
+              x={244 + col * 48}
+              y={282 + row * 30}
+              width="24"
+              height="14"
+              rx="2"
+              fill={col % 3 === 1 ? '#F59E0B' : 'url(#glass)'}
+              opacity={col % 3 === 1 ? 0.72 : 0.58}
+            />
+          ))
+        )}
+        <path d="M118 510 C210 408 312 446 394 374 C492 286 588 340 706 248" fill="none" stroke="#0EA5E9" strokeWidth="4" strokeLinecap="round" filter="url(#glow)" />
+        <path d="M118 558 C228 516 310 552 424 492 C548 426 624 446 762 374" fill="none" stroke="#F59E0B" strokeWidth="3" strokeLinecap="round" strokeDasharray="8 12" opacity="0.84" />
+        {bars.map((h, i) => (
+          <rect key={`b-${i}`} x={650 + i * 17} y={520 - h} width="8" height={h} rx="4" fill={i % 3 === 0 ? '#F59E0B' : '#0EA5E9'} opacity="0.72" />
+        ))}
+        {[
+          [156, 510], [286, 422], [394, 374], [540, 316], [706, 248], [762, 374],
+        ].map(([x, y], i) => (
+          <g key={`n-${i}`} filter="url(#glow)">
+            <circle cx={x} cy={y} r="8" fill={i % 2 ? '#F59E0B' : '#0EA5E9'} />
+            <circle cx={x} cy={y} r="18" fill="none" stroke={i % 2 ? '#F59E0B' : '#0EA5E9'} strokeOpacity="0.28" strokeWidth="2" />
+          </g>
+        ))}
+      </svg>
+      <div style={{ position: 'absolute', right: '9%', top: '15%', width: '210px', padding: '14px 16px', borderRadius: '10px', background: 'rgba(13,20,32,0.72)', border: '1px solid rgba(14,165,233,0.18)', boxShadow: '0 18px 70px rgba(0,0,0,0.36)', backdropFilter: 'blur(14px)' }}>
+        <div style={{ fontSize: '10px', color: '#0EA5E9', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: '8px' }}>Digital twin live</div>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+          <div>
+            <div style={{ fontSize: '20px', color: '#E8EDF5', fontWeight: 800 }}>8.3%</div>
+            <div style={{ fontSize: '9px', color: '#8A9BB5' }}>CV-RMSE</div>
+          </div>
+          <div>
+            <div style={{ fontSize: '20px', color: '#F59E0B', fontWeight: 800 }}>42%</div>
+            <div style={{ fontSize: '9px', color: '#8A9BB5' }}>gap</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // ── CoverScreen ───────────────────────────────────────────────────────────────
 export function CoverScreen() {
   const { setScreen } = useNav();
@@ -72,13 +158,7 @@ export function CoverScreen() {
       }}>
         {/* Brand bar */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-          <img
-            src="/manus-storage/logo-dtt_896b222e.png"
-            alt="Dual-Track Digital Twin"
-            width={32}
-            height={32}
-            style={{ borderRadius: '7px', objectFit: 'cover', display: 'block' }}
-          />
+          <BrandMark size={32} />
           <span style={{ fontSize: '12px', fontWeight: 600, color: '#8A9BB5', letterSpacing: '0.02em' }}>Dual-Track Digital Twin</span>
           <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '4px', padding: '3px 8px', borderRadius: '4px', background: 'rgba(16,185,129,0.08)', border: '1px solid rgba(16,185,129,0.2)' }}>
             <span style={{ width: 5, height: 5, borderRadius: '50%', background: '#10B981', boxShadow: '0 0 4px #10B981', display: 'inline-block' }} />
@@ -194,18 +274,7 @@ export function CoverScreen() {
         {/* Vertical divider */}
         <div style={{ position: 'absolute', left: 0, top: '8%', bottom: '8%', width: '1px', background: 'linear-gradient(to bottom, transparent, rgba(14,165,233,0.12), transparent)', zIndex: 2 }} />
 
-        {/* Hero image — fills the entire right column */}
-        <img
-          src="/manus-storage/hero-building_8533cec8.png"
-          alt="Building digital twin visualization"
-          style={{
-            width: '100%',
-            height: '100%',
-            objectFit: 'cover',
-            objectPosition: 'center',
-            display: 'block',
-          }}
-        />
+        <HeroTwinVisual />
 
         {/* Subtle left-edge fade to blend with divider */}
         <div style={{

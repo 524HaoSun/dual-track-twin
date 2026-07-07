@@ -6,9 +6,9 @@
  *
  * v2: Vivid lighting, warm concrete palette, interior 3D mini-window
  */
-import React, { Suspense, useRef, useState, useEffect, useCallback } from 'react';
+import React, { useRef, useState, useEffect, useCallback } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
-import { OrbitControls, ContactShadows, Environment } from '@react-three/drei';
+import { OrbitControls, ContactShadows } from '@react-three/drei';
 import * as THREE from 'three';
 import { useNav } from '@/contexts/NavContext';
 
@@ -1193,9 +1193,8 @@ export function BuildingScreen() {
             onStart={() => setAutoRotate(false)}
           />
 
-          <Suspense fallback={null}>
+          <>
             {/* City environment map — provides realistic reflections on glass */}
-            <Environment preset="city" />
             {!interior ? (
               <ExteriorBuilding autoRotate={autoRotate} />
             ) : (
@@ -1214,7 +1213,7 @@ export function BuildingScreen() {
               blur={2.5}
               far={4}
             />
-          </Suspense>
+          </>
         </Canvas>
 
         {/* Auto-rotate hint */}

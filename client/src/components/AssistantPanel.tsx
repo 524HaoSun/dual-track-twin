@@ -4,9 +4,7 @@
  * Live mode: MiMo v2 via OpenRouter (server proxy), 3s timeout → scripted fallback
  */
 import React, { useState, useRef, useEffect } from 'react';
-import { useData } from '@/contexts/DataContext';
-import { trpc } from '@/lib/trpc';
-import { X, Send, Zap, ZapOff } from 'lucide-react';
+import { X, Send, ZapOff } from 'lucide-react';
 
 interface Message {
   role: 'user' | 'assistant';
@@ -39,14 +37,10 @@ const SUGGESTED = Object.keys(SCRIPTED);
 const FALLBACK_ANSWER = `The twin doesn't have a scripted answer for that yet. Based on the calibrated model (CV-RMSE 8.3%), feature-importance shares (model feature-importance shares, not causal shares of the gap) rank as: measured feedback lags 56%, occupant behaviour 25%, weather 19%. In plain terms: occupant behaviour and schedules are most likely the primary drivers of the performance gap; weather is most likely secondary. Try one of the suggested questions for detailed evidence.`;
 
 export function AssistantPanel({ onClose }: { onClose: () => void }) {
-  const { data } = useData();
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
-  const [liveMode, setLiveMode] = useState(import.meta.env.VITE_ENABLE_LIVE_ASSISTANT === 'true');
-  const [loading, setLoading] = useState(false);
+  const loading = false;
   const bottomRef = useRef<HTMLDivElement>(null);
-
-  const mimoMutation = trpc.assistant.ask.useMutation();
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -58,48 +52,11 @@ export function AssistantPanel({ onClose }: { onClose: () => void }) {
     setMessages(prev => [...prev, userMsg]);
     setInput('');
 
-    // Check scripted answers first (always available)
     const scripted = SCRIPTED[text];
-
-    if (!liveMode || scripted) {
-      // Use scripted answer
-      const assistantMsg: Message = scripted
-        ? { role: 'assistant', text: scripted.answer, tag: scripted.tag, source: 'scripted' }
-        : { role: 'assistant', text: FALLBACK_ANSWER, source: 'fallback' };
-      setMessages(prev => [...prev, assistantMsg]);
-      return;
-    }
-
-    // Live mode: call MiMo via server proxy with 3s timeout
-    setLoading(true);
-    try {
-      type MiMoResult = { answer: string; tag: string | null; source: 'live' | 'scripted' | 'fallback' };
-      const timeoutPromise = new Promise<never>((_, reject) => setTimeout(() => reject(new Error('timeout')), 12000));
-      const result: MiMoResult = await Promise.race([
-        mimoMutation.mutateAsync({ question: text }) as Promise<MiMoResult>,
-        timeoutPromise,
-      ]);
-
-      if (result && result.answer) {
-        setMessages(prev => [...prev, {
-          role: 'assistant',
-          text: result.answer,
-          tag: result.source === 'live' ? 'AI live' : (result.tag ?? undefined),
-          source: result.source,
-        }]);
-      } else {
-        throw new Error('empty');
-      }
-    } catch {
-      // Timeout or error: fall back to scripted or generic
-      const scriptedFallback = SCRIPTED[text];
-      const fallbackMsg: Message = scriptedFallback
-        ? { role: 'assistant', text: scriptedFallback.answer, tag: scriptedFallback.tag, source: 'scripted' }
-        : { role: 'assistant', text: FALLBACK_ANSWER, source: 'fallback' };
-      setMessages(prev => [...prev, fallbackMsg]);
-    } finally {
-      setLoading(false);
-    }
+    const assistantMsg: Message = scripted
+      ? { role: 'assistant', text: scripted.answer, tag: scripted.tag, source: 'scripted' }
+      : { role: 'assistant', text: FALLBACK_ANSWER, source: 'fallback' };
+    setMessages(prev => [...prev, assistantMsg]);
   };
 
   const sourceColor: Record<string, string> = {
@@ -140,22 +97,19 @@ export function AssistantPanel({ onClose }: { onClose: () => void }) {
           </div>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          {/* Live mode toggle */}
-          <button
-            onClick={() => setLiveMode(v => !v)}
-            title={liveMode ? 'Live mode ON (custom LLM)' : 'Live mode OFF (scripted)'}
+          <div
+            title="GitHub Pages static demo"
             style={{
               display: 'flex', alignItems: 'center', gap: '4px',
               padding: '3px 8px', borderRadius: '4px', fontSize: '9px', fontWeight: 600,
-              background: liveMode ? 'rgba(16,185,129,0.1)' : 'rgba(255,255,255,0.04)',
-              border: liveMode ? '1px solid rgba(16,185,129,0.3)' : '1px solid rgba(255,255,255,0.08)',
-              color: liveMode ? '#10B981' : '#8A9BB5',
-              cursor: 'pointer', transition: 'all 150ms ease',
+              background: 'rgba(255,255,255,0.04)',
+              border: '1px solid rgba(255,255,255,0.08)',
+              color: '#8A9BB5',
             }}
           >
-            {liveMode ? <Zap size={9} /> : <ZapOff size={9} />}
-            {liveMode ? 'Live' : 'Scripted'}
-          </button>
+            <ZapOff size={9} />
+            Local demo
+          </div>
           <button onClick={onClose} style={{ color: '#8A9BB5', padding: '4px', background: 'none', border: 'none', cursor: 'pointer', borderRadius: '4px' }}>
             <X size={14} />
           </button>
@@ -253,7 +207,7 @@ export function AssistantPanel({ onClose }: { onClose: () => void }) {
             value={input}
             onChange={e => setInput(e.target.value)}
             onKeyDown={e => e.key === 'Enter' && !loading && sendMessage(input)}
-            placeholder={liveMode ? 'Ask MiMo anything...' : 'Ask a follow-up...'}
+            placeholder="Ask a follow-up..."
             disabled={loading}
             style={{ flex: 1, background: 'none', border: 'none', outline: 'none', fontSize: '11px', color: '#E8EDF5', fontFamily: 'DM Sans, sans-serif' }}
           />
@@ -265,11 +219,12 @@ export function AssistantPanel({ onClose }: { onClose: () => void }) {
             <Send size={14} />
           </button>
         </div>
-        {liveMode && (
-          <div style={{ fontSize: '8px', color: '#3D4F6A', marginTop: '4px', textAlign: 'center' }}>
+        <div style={{ fontSize: '8px', color: '#3D4F6A', marginTop: '4px', textAlign: 'center' }}>
+          GitHub Pages demo · grounded by verified figures
+        </div>
+        <div style={{ display: 'none' }}>
             MiMo v2 · grounded by verified figures · scripted fallback on timeout
-          </div>
-        )}
+        </div>
       </div>
 
       <style>{`

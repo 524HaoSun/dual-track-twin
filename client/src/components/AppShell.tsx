@@ -32,13 +32,27 @@ import {
 // ── Brand mark ────────────────────────────────────────────────────────────────
 function BrandMark({ size = 32 }: { size?: number }) {
   return (
-    <img
-      src="/manus-storage/logo-dtt_896b222e.png"
-      alt="Dual-Track Digital Twin"
+    <svg
       width={size}
       height={size}
-      style={{ borderRadius: '6px', objectFit: 'cover', display: 'block' }}
-    />
+      viewBox="0 0 48 48"
+      role="img"
+      aria-label="Dual-Track Digital Twin"
+      style={{ display: 'block', borderRadius: '6px' }}
+    >
+      <defs>
+        <linearGradient id="brand-bg" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stopColor="#0EA5E9" stopOpacity="0.24" />
+          <stop offset="100%" stopColor="#F59E0B" stopOpacity="0.18" />
+        </linearGradient>
+      </defs>
+      <rect width="48" height="48" rx="10" fill="#0D1420" />
+      <rect x="1" y="1" width="46" height="46" rx="9" fill="url(#brand-bg)" stroke="rgba(255,255,255,0.12)" />
+      <path d="M12 34V18l10-6 10 6v16" fill="none" stroke="#0EA5E9" strokeWidth="3" strokeLinejoin="round" />
+      <path d="M22 34V23h10v11" fill="none" stroke="#F59E0B" strokeWidth="3" strokeLinejoin="round" />
+      <path d="M12 34h24" stroke="#E8EDF5" strokeWidth="3" strokeLinecap="round" />
+      <path d="M16 20h4M16 25h4M28 20h4" stroke="#E8EDF5" strokeWidth="2" strokeLinecap="round" opacity="0.8" />
+    </svg>
   );
 }
 
