@@ -38,20 +38,14 @@ function BrandMark({ size = 32 }: { size?: number }) {
       viewBox="0 0 48 48"
       role="img"
       aria-label="Dual-Track Digital Twin"
-      style={{ display: 'block', borderRadius: '6px' }}
+      style={{ display: 'block' }}
     >
-      <defs>
-        <linearGradient id="brand-bg" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stopColor="#0EA5E9" stopOpacity="0.24" />
-          <stop offset="100%" stopColor="#F59E0B" stopOpacity="0.18" />
-        </linearGradient>
-      </defs>
-      <rect width="48" height="48" rx="10" fill="#0D1420" />
-      <rect x="1" y="1" width="46" height="46" rx="9" fill="url(#brand-bg)" stroke="rgba(255,255,255,0.12)" />
-      <path d="M12 34V18l10-6 10 6v16" fill="none" stroke="#0EA5E9" strokeWidth="3" strokeLinejoin="round" />
-      <path d="M22 34V23h10v11" fill="none" stroke="#F59E0B" strokeWidth="3" strokeLinejoin="round" />
-      <path d="M12 34h24" stroke="#E8EDF5" strokeWidth="3" strokeLinecap="round" />
-      <path d="M16 20h4M16 25h4M28 20h4" stroke="#E8EDF5" strokeWidth="2" strokeLinecap="round" opacity="0.8" />
+      <path d="M15 10 30 5v34l-15 4V10Z" fill="#092238" stroke="#0EA5E9" strokeWidth="1.4" />
+      <path d="M30 5 38 11v29l-8-1V5Z" fill="#061827" stroke="#075985" strokeWidth="1.2" />
+      <path d="M19 14v24M24 12v24M15 19l15-4M15 25l15-4M15 31l15-4M15 37l15-4" stroke="#0EA5E9" strokeOpacity="0.55" strokeWidth="1" />
+      <path d="M32 13l4 2M32 19l4 1.8M32 25l4 1.6M32 31l4 1.4" stroke="#F59E0B" strokeOpacity="0.55" strokeWidth="1" />
+      <path d="M13 43h28" stroke="#0B5F88" strokeWidth="1.2" strokeLinecap="round" />
+      <path d="M15 10 30 5 38 11" fill="none" stroke="#0EA5E9" strokeWidth="1.8" strokeLinejoin="round" />
     </svg>
   );
 }
