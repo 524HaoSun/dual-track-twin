@@ -22,12 +22,14 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    const baseUrl = import.meta.env.BASE_URL;
+
     Promise.all([
-      fetch('/demo_data.json').then((r) => {
+      fetch(`${baseUrl}demo_data.json`).then((r) => {
         if (!r.ok) throw new Error(`demo_data.json HTTP ${r.status}`);
         return r.json() as Promise<DemoData>;
       }),
-      fetch('/demo_data_extra.json').then((r) => {
+      fetch(`${baseUrl}demo_data_extra.json`).then((r) => {
         if (!r.ok) throw new Error(`demo_data_extra.json HTTP ${r.status}`);
         return r.json() as Promise<ExtraData>;
       }),

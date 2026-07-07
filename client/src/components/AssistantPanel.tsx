@@ -42,7 +42,7 @@ export function AssistantPanel({ onClose }: { onClose: () => void }) {
   const { data } = useData();
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
-  const [liveMode, setLiveMode] = useState(true);
+  const [liveMode, setLiveMode] = useState(import.meta.env.VITE_ENABLE_LIVE_ASSISTANT === 'true');
   const [loading, setLoading] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
 
