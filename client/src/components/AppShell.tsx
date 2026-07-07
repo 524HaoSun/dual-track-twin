@@ -207,7 +207,7 @@ function LeftNav() {
 }
 
 // ── Loading ───────────────────────────────────────────────────────────────────
-function LoadingScreen() {
+function LegacyLoadingScreen() {
   return (
     <div
       className="w-full h-full flex items-center justify-center"
@@ -228,6 +228,26 @@ function LoadingScreen() {
 }
 
 // ── Screen router ─────────────────────────────────────────────────────────────
+function LoadingScreen() {
+  return (
+    <div
+      className="w-full h-full flex items-center justify-center"
+      style={{ background: '#0A0E14' }}
+    >
+      <div className="text-center space-y-4">
+        <BrandMark size={40} />
+        <div className="text-xs font-medium" style={{ color: '#8A9BB5' }}>Loading data...</div>
+        <div className="w-24 h-0.5 rounded-full overflow-hidden mx-auto" style={{ background: 'rgba(255,255,255,0.08)' }}>
+          <div
+            className="h-full rounded-full"
+            style={{ background: '#0EA5E9', width: '60%', animation: 'pulse 1.5s ease-in-out infinite' }}
+          />
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function ScreenContent() {
   const { screen } = useNav();
   switch (screen) {
