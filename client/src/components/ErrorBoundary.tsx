@@ -23,21 +23,29 @@ class ErrorBoundary extends Component<Props, State> {
 
   render() {
     if (this.state.hasError) {
+      const showTechnicalDetails = import.meta.env.DEV;
+
       return (
-        <div className="flex items-center justify-center min-h-screen p-8 bg-background">
-          <div className="flex flex-col items-center w-full max-w-2xl p-8">
+        <div className="flex items-center justify-center min-h-screen p-8" style={{ background: "#0A0E14" }}>
+          <div className="flex flex-col items-center w-full max-w-md p-8 text-center">
             <AlertTriangle
               size={48}
-              className="text-destructive mb-6 flex-shrink-0"
+              className="mb-6 flex-shrink-0"
+              style={{ color: "#F59E0B" }}
             />
 
-            <h2 className="text-xl mb-4">An unexpected error occurred.</h2>
+            <h2 className="text-xl mb-3" style={{ color: "#E8EDF5" }}>Something went wrong.</h2>
+            <p className="text-sm mb-6" style={{ color: "#8A9BB5", lineHeight: 1.6 }}>
+              The demo hit a rendering error. Reloading usually restores the current session.
+            </p>
 
-            <div className="p-4 w-full rounded bg-muted overflow-auto mb-6">
-              <pre className="text-sm text-muted-foreground whitespace-break-spaces">
-                {this.state.error?.stack}
-              </pre>
-            </div>
+            {showTechnicalDetails && (
+              <div className="p-4 w-full rounded overflow-auto mb-6 text-left" style={{ background: "#111827" }}>
+                <pre className="text-xs whitespace-break-spaces" style={{ color: "#8A9BB5" }}>
+                  {this.state.error?.stack}
+                </pre>
+              </div>
+            )}
 
             <button
               onClick={() => window.location.reload()}

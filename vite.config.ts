@@ -150,10 +150,14 @@ function vitePluginManusDebugCollector(): Plugin {
   };
 }
 
-const plugins = [react(), tailwindcss(), jsxLocPlugin(), vitePluginManusRuntime(), vitePluginManusDebugCollector()];
-
-export default defineConfig({
-  plugins,
+export default defineConfig(({ command }) => ({
+  plugins: [
+    react(),
+    tailwindcss(),
+    jsxLocPlugin(),
+    vitePluginManusRuntime(),
+    ...(command === "serve" ? [vitePluginManusDebugCollector()] : []),
+  ],
   base: process.env.GITHUB_PAGES === "true" ? "/dual-track-twin/" : "/",
   resolve: {
     alias: {
@@ -185,4 +189,4 @@ export default defineConfig({
       deny: ["**/.*"],
     },
   },
-});
+}));
