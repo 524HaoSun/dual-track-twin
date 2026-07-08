@@ -249,18 +249,23 @@ function ExteriorBuilding({ autoRotate }: { autoRotate: boolean }) {
 
       {/* ── ENTRANCE CANOPY ──────────────────────────────────────────────── */}
       {/* Canopy slab */}
-      <mesh position={[0, 3.2, 4.8]} castShadow>
-        <boxGeometry args={[5.0, 0.12, 1.8]} />
+      <mesh position={[0, 3.2, 4.15]} castShadow>
+        <boxGeometry args={[5.0, 0.12, 2.3]} />
         <meshStandardMaterial color="#4A5568" roughness={0.4} metalness={0.2} />
       </mesh>
+      {/* Wall ledger beam so the canopy visibly connects to the facade */}
+      <mesh position={[0, 3.18, 3.04]} castShadow>
+        <boxGeometry args={[5.2, 0.2, 0.18]} />
+        <meshStandardMaterial color="#5A6880" roughness={0.35} metalness={0.35} />
+      </mesh>
       {/* Canopy soffit (lighter underside) */}
-      <mesh position={[0, 3.14, 4.8]}>
-        <boxGeometry args={[4.9, 0.02, 1.75]} />
+      <mesh position={[0, 3.14, 4.15]}>
+        <boxGeometry args={[4.9, 0.02, 2.22]} />
         <meshStandardMaterial color="#FFFDE7" emissive="#FFF8E1" emissiveIntensity={0.4} roughness={0.1} />
       </mesh>
       {/* Canopy steel columns */}
       {[-1.8, 1.8].map((x, i) => (
-        <mesh key={i} position={[x, 1.6, 5.5]} castShadow>
+        <mesh key={i} position={[x, 1.6, 5.12]} castShadow>
           <cylinderGeometry args={[0.06, 0.06, 3.2, 12]} />
           <meshStandardMaterial color="#8A9AB0" roughness={0.2} metalness={0.85} />
         </mesh>
@@ -279,10 +284,15 @@ function ExteriorBuilding({ autoRotate }: { autoRotate: boolean }) {
           </mesh>
         </group>
       ))}
-      {/* Entrance steps */}
-      {[0, 1, 2].map(i => (
-        <mesh key={i} position={[0, i * 0.18 + 0.09, 4.2 - i * 0.3]} receiveShadow>
-          <boxGeometry args={[4.0, 0.18, 0.3]} />
+      {/* Entrance landing and steps - top landing overlaps the plinth so it reads as connected */}
+      {[
+        { pos: [0, 0.13, 3.28] as [number, number, number], size: [3.8, 0.18, 0.58] as [number, number, number] },
+        { pos: [0, 0.10, 3.78] as [number, number, number], size: [4.05, 0.15, 0.44] as [number, number, number] },
+        { pos: [0, 0.07, 4.18] as [number, number, number], size: [4.3, 0.13, 0.44] as [number, number, number] },
+        { pos: [0, 0.045, 4.58] as [number, number, number], size: [4.55, 0.10, 0.44] as [number, number, number] },
+      ].map(({ pos, size }, i) => (
+        <mesh key={`step${i}`} position={pos} receiveShadow castShadow>
+          <boxGeometry args={size} />
           {concreteMat}
         </mesh>
       ))}
