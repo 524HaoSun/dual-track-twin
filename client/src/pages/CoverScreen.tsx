@@ -175,7 +175,7 @@ export function CoverScreen() {
         position: 'relative',
         overflow: 'hidden',
         display: 'grid',
-        gridTemplateColumns: '51% 49%',
+        gridTemplateColumns: '47% 53%',
         background: '#07101A',
       }}
     >
@@ -206,7 +206,7 @@ export function CoverScreen() {
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'space-between',
-          padding: '24px 44px 22px 44px',
+          padding: '24px 34px 22px 44px',
           opacity: visible ? 1 : 0,
           transform: visible ? 'translateY(0)' : 'translateY(18px)',
           transition: 'opacity 650ms ease, transform 650ms cubic-bezier(0.23,1,0.32,1)',
@@ -324,12 +324,14 @@ export function CoverScreen() {
           aria-hidden="true"
           style={{
             position: 'absolute',
-            inset: 0,
-            width: '100%',
-            height: '100%',
+            top: '3%',
+            bottom: '3%',
+            left: '50%',
+            width: '112%',
+            height: '94%',
             objectFit: 'cover',
             objectPosition: 'center center',
-            transform: 'scale(1.015)',
+            transform: 'translateX(-50%)',
           }}
         />
         <div
