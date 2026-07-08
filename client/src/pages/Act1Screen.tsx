@@ -12,7 +12,7 @@ import { useData } from '@/contexts/DataContext';
 import { RotateCcw } from 'lucide-react';
 
 const DEFAULT_VENTILATION = 1.0;
-const DEFAULT_OCCUPANCY   = 100;
+const DEFAULT_OCCUPANCY   = 1.0;
 const DEFAULT_EQUIP_LOAD  = 120;
 
 function formatHour(ts: string): string {
@@ -50,6 +50,13 @@ function AnimNum({ value, decimals = 1, color }: { value: number; decimals?: num
   return <span style={color ? { color } : {}}>{disp.toFixed(decimals)}</span>;
 }
 
+function formatSliderValue(value: number, unit: string): string {
+  if (unit === 'x') return `${value.toFixed(2)}x`;
+  if (unit === '%') return `${value.toFixed(0)}%`;
+  if (unit === 'ACH') return `${value.toFixed(1)} ${unit}`;
+  return `${value.toFixed(value < 10 ? 1 : 0)} ${unit}`;
+}
+
 function SliderRow({ emoji, label, value, unit, min, max, step, defaultVal, onChange }: {
   emoji: string; label: string; value: number; unit: string;
   min: number; max: number; step: number; defaultVal: number;
@@ -66,7 +73,7 @@ function SliderRow({ emoji, label, value, unit, min, max, step, defaultVal, onCh
         </div>
         <div className="flex items-center gap-1.5">
           <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '12px', fontWeight: 600, color: changed ? '#F59E0B' : '#0EA5E9' }}>
-            {value.toFixed(value < 10 ? 1 : 0)} {unit}
+            {formatSliderValue(value, unit)}
           </span>
           {changed && (
             <button onClick={() => onChange(defaultVal)} style={{ color: '#8A9BB5', padding: '2px' }}>
@@ -82,9 +89,9 @@ function SliderRow({ emoji, label, value, unit, min, max, step, defaultVal, onCh
           style={{ position: 'absolute', inset: 0, opacity: 0, width: '100%', cursor: 'pointer' }} />
       </div>
       <div className="flex justify-between" style={{ fontSize: '9px', color: '#3D4F6A', marginTop: '3px' }}>
-        <span>{min}{unit === '%' ? '%' : ''}</span>
-        <span style={{ color: '#8A9BB5' }}>default {defaultVal}{unit === '%' ? '%' : ` ${unit}`}</span>
-        <span>{max}{unit === '%' ? '%' : ''}</span>
+        <span>{formatSliderValue(min, unit)}</span>
+        <span style={{ color: '#8A9BB5' }}>default {formatSliderValue(defaultVal, unit)}</span>
+        <span>{formatSliderValue(max, unit)}</span>
       </div>
     </div>
   );
@@ -117,7 +124,7 @@ export function Act1Screen() {
   const scenarioData = data?.scenarios.cold_snap;
   const s0 = scenarioData?.stages.S0;
 
-  const isAtDefault = Math.abs(occupancy - DEFAULT_OCCUPANCY) < 1 && Math.abs(equipLoad - DEFAULT_EQUIP_LOAD) < 1 && Math.abs(ventilation - DEFAULT_VENTILATION) < 0.05;
+  const isAtDefault = Math.abs(occupancy - DEFAULT_OCCUPANCY) < 0.005 && Math.abs(equipLoad - DEFAULT_EQUIP_LOAD) < 1 && Math.abs(ventilation - DEFAULT_VENTILATION) < 0.05;
 
   useEffect(() => { if (!isAtDefault) setPredicted(true); }, [ventilation, occupancy, equipLoad, isAtDefault]);
 
@@ -155,7 +162,7 @@ export function Act1Screen() {
 
         <div>
           <SliderRow emoji="💨" label="Ventilation" value={ventilation} unit="ACH" min={0.5} max={3.0} step={0.1} defaultVal={DEFAULT_VENTILATION} onChange={setVentilation} />
-          <SliderRow emoji="👥" label="Occupancy" value={occupancy} unit="%" min={50} max={150} step={5} defaultVal={DEFAULT_OCCUPANCY} onChange={setOccupancy} />
+          <SliderRow emoji="👥" label="Occupancy schedule" value={occupancy} unit="x" min={0.8} max={1.2} step={0.05} defaultVal={DEFAULT_OCCUPANCY} onChange={setOccupancy} />
           <SliderRow emoji="⚡" label="Equipment load" value={equipLoad} unit="W/m²" min={60} max={200} step={5} defaultVal={DEFAULT_EQUIP_LOAD} onChange={setEquipLoad} />
         </div>
 
