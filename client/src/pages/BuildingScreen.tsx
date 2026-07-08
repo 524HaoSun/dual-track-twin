@@ -98,66 +98,40 @@ function ExteriorBuilding({ autoRotate }: { autoRotate: boolean }) {
   const roofMat = <meshStandardMaterial color="#2E3A4A" roughness={0.55} metalness={0.12} />;
   const glassMat = (
     <meshPhysicalMaterial
-      color="#7DD3FC" transparent opacity={0.24}
-      roughness={0.02} metalness={0.0}
-      envMapIntensity={3.4} transmission={0.88} ior={1.52} reflectivity={0.55}
-      thickness={0.08} side={THREE.DoubleSide}
+      color="#9ED8FF" transparent opacity={0.34}
+      roughness={0.03} metalness={0.0}
+      envMapIntensity={2.8} transmission={0.72} ior={1.52} reflectivity={0.42}
+      thickness={0.05} side={THREE.DoubleSide}
     />
   );
   const frameColor = "#8A9AB0";
   const accentColor = "#2D4A6A";
 
-  // Helper: curtain wall bay (vertical mullions + horizontal transoms + glass)
+  // Helper: curtain wall bay with simple large panes and a soft interior glow.
   const curtainWallBay = (x: number, y: number, z: number, w: number, h: number, rot: number, key: string) => (
     <group key={key} position={[x, y, z]} rotation={[0, rot, 0]}>
-      {/* Visible room layer is held just inside the curtain wall face, not buried inside the opaque core. */}
       <mesh position={[0, 0, 0.012]}>
         <boxGeometry args={[w - 0.18, h - 0.18, 0.035]} />
         <meshBasicMaterial color="#06101C" />
       </mesh>
-      {/* Interior floor / ceiling hints */}
-      {[-h * 0.34, h * 0.34].map((ly, i) => (
-        <mesh key={`slab${i}`} position={[0, ly, 0.026]}>
-          <boxGeometry args={[w - 0.24, 0.055, 0.035]} />
-          <meshStandardMaterial color="#253244" roughness={0.55} metalness={0.08} />
-        </mesh>
-      ))}
-      {/* Bright linear luminaires, deliberately visible through the glazing */}
-      {[-h * 0.18, h * 0.18].map((ly, i) => (
-        <mesh key={`light${i}`} position={[0, ly, 0.04]}>
-          <boxGeometry args={[w - 0.34, 0.045, 0.03]} />
-          <meshBasicMaterial color="#FFD37A" toneMapped={false} />
-        </mesh>
-      ))}
-      {/* Desk silhouettes close to the glass make the facade read as occupied space. */}
-      {[-0.32, 0.0, 0.32].map((fx, i) => (
-        <group key={`desk${i}`} position={[fx * w, -h * 0.27, 0.045]}>
-          <mesh>
-            <boxGeometry args={[Math.min(0.34, w * 0.18), 0.08, 0.055]} />
-            <meshStandardMaterial color="#0E1726" roughness={0.7} metalness={0.08} />
-          </mesh>
-          <mesh position={[0, 0.11, 0]}>
-            <boxGeometry args={[Math.min(0.2, w * 0.11), 0.12, 0.03]} />
-            <meshStandardMaterial color="#142033" roughness={0.72} />
-          </mesh>
-        </group>
-      ))}
-      {/* Glass fill */}
+      <mesh position={[0, -h * 0.06, 0.04]}>
+        <boxGeometry args={[w - 0.34, h * 0.58, 0.026]} />
+        <meshBasicMaterial color="#F8C471" transparent opacity={0.18} toneMapped={false} />
+      </mesh>
       <mesh position={[0, 0, 0.064]}>
         <boxGeometry args={[w - 0.08, h - 0.08, 0.014]} />
         {glassMat}
       </mesh>
-      {/* Vertical mullions */}
-      {[-w/2, 0, w/2].map((mx, i) => (
+      {/* Thin perimeter frame plus one centre mullion; no grid bars. */}
+      {[-w / 2, 0, w / 2].map((mx, i) => (
         <mesh key={i} position={[mx, 0, 0.082]}>
-          <boxGeometry args={[0.06, h, 0.05]} />
+          <boxGeometry args={[0.045, h, 0.045]} />
           <meshStandardMaterial color={frameColor} roughness={0.25} metalness={0.75} />
         </mesh>
       ))}
-      {/* Horizontal transoms */}
-      {[-h/3, 0, h/3].map((my, i) => (
+      {[-h / 2, h / 2].map((my, i) => (
         <mesh key={i} position={[0, my, 0.083]}>
-          <boxGeometry args={[w, 0.05, 0.048]} />
+          <boxGeometry args={[w, 0.045, 0.045]} />
           <meshStandardMaterial color={frameColor} roughness={0.25} metalness={0.75} />
         </mesh>
       ))}
@@ -260,35 +234,27 @@ function ExteriorBuilding({ autoRotate }: { autoRotate: boolean }) {
               <boxGeometry args={[0.025, 1.05, 0.86]} />
               <meshBasicMaterial color="#06101C" />
             </mesh>
-            <mesh position={[0.035, 0.28, 0]}>
-              <boxGeometry args={[0.018, 0.045, 0.74]} />
-              <meshBasicMaterial color="#FFD37A" toneMapped={false} />
+            <mesh position={[0.035, -0.04, 0]}>
+              <boxGeometry args={[0.018, 0.7, 0.62]} />
+              <meshBasicMaterial color="#F8C471" transparent opacity={0.18} toneMapped={false} />
             </mesh>
             <mesh position={[0.052, 0, 0]}>
               <boxGeometry args={[0.014, 1.2, 1.0]} />
               {glassMat}
             </mesh>
-            {/* Window frame strips */}
+            {/* Simple punched-window frame; no grille. */}
             {[-0.55, 0.55].map(fz => (
               <mesh key={`vf${fz}`} position={[0.072, 0, fz]}>
-                <boxGeometry args={[0.06, 1.3, 0.045]} />
+                <boxGeometry args={[0.05, 1.3, 0.04]} />
                 <meshStandardMaterial color={frameColor} roughness={0.3} metalness={0.6} />
               </mesh>
             ))}
-            {[-0.65, 0, 0.65].map(fy => (
+            {[-0.65, 0.65].map(fy => (
               <mesh key={`hf${fy}`} position={[0.072, fy, 0]}>
-                <boxGeometry args={[0.06, 0.045, 1.1]} />
+                <boxGeometry args={[0.05, 0.04, 1.1]} />
                 <meshStandardMaterial color={frameColor} roughness={0.3} metalness={0.6} />
               </mesh>
             ))}
-            <mesh position={[0.06, -0.34, -0.22]}>
-              <boxGeometry args={[0.035, 0.12, 0.24]} />
-              <meshStandardMaterial color="#111827" roughness={0.75} metalness={0.05} />
-            </mesh>
-            <mesh position={[0.06, -0.34, 0.22]}>
-              <boxGeometry args={[0.035, 0.12, 0.24]} />
-              <meshStandardMaterial color="#111827" roughness={0.75} metalness={0.05} />
-            </mesh>
             {/* Sunshade above */}
             <mesh position={[0.2, 0.72, 0]}>
               <boxGeometry args={[0.4, 0.05, 1.1]} />
