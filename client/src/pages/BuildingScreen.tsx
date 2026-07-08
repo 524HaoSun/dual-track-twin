@@ -310,20 +310,55 @@ function ExteriorBuilding({ autoRotate }: { autoRotate: boolean }) {
         <cylinderGeometry args={[0.55, 0.55, 0.05, 16]} />
         <meshStandardMaterial color="#5A6A7A" roughness={0.3} metalness={0.6} />
       </mesh>
-      {/* Solar panels */}
-      {[0, 1, 2].map(i => (
-        <group key={i} position={[1.5 + i * 1.4, 5.45, 0.5]} rotation={[-0.2, 0, 0]}>
-          <mesh>
-            <boxGeometry args={[1.2, 0.04, 0.7]} />
-            <meshStandardMaterial color="#1A2A4A" roughness={0.15} metalness={0.4} />
-          </mesh>
-          {/* Panel grid */}
-          {[0, 1].map(row => [0, 1, 2].map(col => (
-            <mesh key={`${row}${col}`} position={[(col - 1) * 0.38, 0.025, (row - 0.5) * 0.32]}>
-              <boxGeometry args={[0.36, 0.01, 0.30]} />
-              <meshStandardMaterial color="#1E3A6A" roughness={0.1} metalness={0.5} emissive="#0A1A3A" emissiveIntensity={0.3} />
+      {/* Solar panels - set back from the parapet and tilted toward the entrance / south-facing facade */}
+      {[
+        [0.65, 0.15],
+        [1.95, 0.15],
+        [3.25, 0.15],
+        [0.65, 1.05],
+        [1.95, 1.05],
+        [3.25, 1.05],
+      ].map(([x, z], i) => (
+        <group key={i} position={[x, 0, z]}>
+          {/* Vertical ballast legs: taller on the north edge, shorter on the front/south edge */}
+          {[-0.42, 0.42].map(px => (
+            <React.Fragment key={px}>
+              <mesh position={[px, 5.46, -0.28]} castShadow>
+                <boxGeometry args={[0.05, 0.28, 0.05]} />
+                <meshStandardMaterial color="#7A8798" roughness={0.35} metalness={0.65} />
+              </mesh>
+              <mesh position={[px, 5.39, 0.28]} castShadow>
+                <boxGeometry args={[0.05, 0.14, 0.05]} />
+                <meshStandardMaterial color="#7A8798" roughness={0.35} metalness={0.65} />
+              </mesh>
+            </React.Fragment>
+          ))}
+          <group position={[0, 5.52, 0]} rotation={[0.23, 0, 0]}>
+            <mesh castShadow>
+              <boxGeometry args={[1.12, 0.04, 0.64]} />
+              <meshStandardMaterial color="#10213F" roughness={0.18} metalness={0.45} />
             </mesh>
-          )))}
+            {/* Aluminium frame */}
+            {[-0.58, 0.58].map(fx => (
+              <mesh key={`fx${fx}`} position={[fx, 0.035, 0]}>
+                <boxGeometry args={[0.035, 0.018, 0.70]} />
+                <meshStandardMaterial color="#8A9AB0" roughness={0.25} metalness={0.8} />
+              </mesh>
+            ))}
+            {[-0.34, 0, 0.34].map(fz => (
+              <mesh key={`fz${fz}`} position={[0, 0.038, fz]}>
+                <boxGeometry args={[1.16, 0.018, 0.025]} />
+                <meshStandardMaterial color="#8A9AB0" roughness={0.25} metalness={0.8} />
+              </mesh>
+            ))}
+            {/* Panel cells */}
+            {[-0.16, 0.16].map(rowZ => [-0.36, 0, 0.36].map(colX => (
+              <mesh key={`${rowZ}${colX}`} position={[colX, 0.05, rowZ]}>
+                <boxGeometry args={[0.32, 0.012, 0.26]} />
+                <meshStandardMaterial color="#1E3A6A" roughness={0.1} metalness={0.5} emissive="#0A1A3A" emissiveIntensity={0.3} />
+              </mesh>
+            )))}
+          </group>
         </group>
       ))}
       {/* Roof drainage pipes — run from roof parapet down to plinth */}
