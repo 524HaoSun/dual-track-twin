@@ -178,6 +178,7 @@ function LeftNav() {
             key={id}
             onClick={() => setScreen(id)}
             title={label}
+            aria-label={label}
             className="relative w-9 h-9 rounded-lg flex items-center justify-center transition-all duration-150"
             style={{
               background: active ? 'rgba(14,165,233,0.15)' : 'transparent',
@@ -192,31 +193,27 @@ function LeftNav() {
                 style={{ background: '#0EA5E9' }}
               />
             )}
+            {step && (
+              <span
+                className="absolute right-0.5 top-0.5 rounded-full flex items-center justify-center"
+                style={{
+                  width: '12px',
+                  height: '12px',
+                  fontSize: '7px',
+                  fontWeight: 800,
+                  fontFamily: 'JetBrains Mono, monospace',
+                  background: active ? '#0EA5E9' : 'rgba(255,255,255,0.08)',
+                  color: active ? '#07101A' : '#8A9BB5',
+                  border: '1px solid rgba(255,255,255,0.12)',
+                }}
+              >
+                {step}
+              </span>
+            )}
 
           </button>
         );
       })}
-    </div>
-  );
-}
-
-// ── Loading ───────────────────────────────────────────────────────────────────
-function LegacyLoadingScreen() {
-  return (
-    <div
-      className="w-full h-full flex items-center justify-center"
-      style={{ background: '#0A0E14' }}
-    >
-      <div className="text-center space-y-4">
-        <BrandMark size={40} />
-        <div className="text-xs font-medium" style={{ color: '#8A9BB5' }}>Loading data…</div>
-        <div className="w-24 h-0.5 rounded-full overflow-hidden mx-auto" style={{ background: 'rgba(255,255,255,0.08)' }}>
-          <div
-            className="h-full rounded-full"
-            style={{ background: '#0EA5E9', width: '60%', animation: 'pulse 1.5s ease-in-out infinite' }}
-          />
-        </div>
-      </div>
     </div>
   );
 }

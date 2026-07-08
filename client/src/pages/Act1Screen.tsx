@@ -57,12 +57,20 @@ function formatSliderValue(value: number, unit: string): string {
   return `${value.toFixed(value < 10 ? 1 : 0)} ${unit}`;
 }
 
-function SliderRow({ emoji, label, value, unit, min, max, step, defaultVal, onChange }: {
+function formatMultiplierDelta(mult: number): string {
+  const pct = Math.round((mult - 1) * 100);
+  if (pct === 0) return 'baseline';
+  return `${pct > 0 ? '+' : ''}${pct}%`;
+}
+
+function SliderRow({ emoji, label, value, unit, min, max, step, defaultVal, hint, onChange }: {
   emoji: string; label: string; value: number; unit: string;
   min: number; max: number; step: number; defaultVal: number;
+  hint?: string;
   onChange: (v: number) => void;
 }) {
   const pct = ((value - min) / (max - min)) * 100;
+  const defaultPct = ((defaultVal - min) / (max - min)) * 100;
   const changed = Math.abs(value - defaultVal) > step * 0.1;
   return (
     <div style={{ marginBottom: '16px' }}>
@@ -76,7 +84,12 @@ function SliderRow({ emoji, label, value, unit, min, max, step, defaultVal, onCh
             {formatSliderValue(value, unit)}
           </span>
           {changed && (
-            <button onClick={() => onChange(defaultVal)} style={{ color: '#8A9BB5', padding: '2px' }}>
+            <button
+              onClick={() => onChange(defaultVal)}
+              title={`Reset ${label}`}
+              aria-label={`Reset ${label}`}
+              style={{ color: '#8A9BB5', padding: '2px' }}
+            >
               <RotateCcw size={10} />
             </button>
           )}
@@ -85,6 +98,21 @@ function SliderRow({ emoji, label, value, unit, min, max, step, defaultVal, onCh
       <div style={{ position: 'relative', height: '6px' }}>
         <div style={{ position: 'absolute', inset: 0, borderRadius: '3px', background: 'rgba(255,255,255,0.08)' }} />
         <div style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: `${pct}%`, borderRadius: '3px', background: changed ? '#F59E0B' : '#0EA5E9', transition: 'width 120ms ease' }} />
+        <div
+          title="Baseline setting"
+          style={{
+            position: 'absolute',
+            left: `${defaultPct}%`,
+            top: '-3px',
+            width: '2px',
+            height: '12px',
+            borderRadius: '2px',
+            background: 'rgba(232,237,245,0.62)',
+            boxShadow: '0 0 8px rgba(14,165,233,0.24)',
+            transform: 'translateX(-1px)',
+            pointerEvents: 'none',
+          }}
+        />
         <input type="range" min={min} max={max} step={step} value={value} onChange={e => onChange(Number(e.target.value))}
           style={{ position: 'absolute', inset: 0, opacity: 0, width: '100%', cursor: 'pointer' }} />
       </div>
@@ -93,6 +121,11 @@ function SliderRow({ emoji, label, value, unit, min, max, step, defaultVal, onCh
         <span style={{ color: '#8A9BB5' }}>default {formatSliderValue(defaultVal, unit)}</span>
         <span>{formatSliderValue(max, unit)}</span>
       </div>
+      {hint && (
+        <div style={{ fontSize: '9px', lineHeight: 1.35, color: '#5B6E89', marginTop: '5px' }}>
+          {hint}
+        </div>
+      )}
     </div>
   );
 }
@@ -162,7 +195,18 @@ export function Act1Screen() {
 
         <div>
           <SliderRow emoji="💨" label="Ventilation" value={ventilation} unit="ACH" min={0.5} max={3.0} step={0.1} defaultVal={DEFAULT_VENTILATION} onChange={setVentilation} />
-          <SliderRow emoji="👥" label="Occupancy schedule" value={occupancy} unit="x" min={0.8} max={1.2} step={0.05} defaultVal={DEFAULT_OCCUPANCY} onChange={setOccupancy} />
+          <SliderRow
+            emoji="👥"
+            label="Occupancy schedule"
+            value={occupancy}
+            unit="x"
+            min={0.8}
+            max={1.2}
+            step={0.05}
+            defaultVal={DEFAULT_OCCUPANCY}
+            hint="1.20x means roughly 20% higher/longer occupied hours than the baseline schedule."
+            onChange={setOccupancy}
+          />
           <SliderRow emoji="⚡" label="Equipment load" value={equipLoad} unit="W/m²" min={60} max={200} step={5} defaultVal={DEFAULT_EQUIP_LOAD} onChange={setEquipLoad} />
         </div>
 
@@ -176,7 +220,10 @@ export function Act1Screen() {
             ].map(({ label, mult }) => (
               <div key={label} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
                 <span style={{ fontSize: '10px', color: '#8A9BB5' }}>{label}</span>
-                <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '11px', fontWeight: 600, color: Math.abs(mult - 1) > 0.05 ? '#F59E0B' : '#8A9BB5' }}>{mult.toFixed(2)}×</span>
+                <span style={{ display: 'flex', alignItems: 'baseline', gap: '6px' }}>
+                  <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '11px', fontWeight: 700, color: Math.abs(mult - 1) > 0.05 ? '#F59E0B' : '#8A9BB5' }}>{mult.toFixed(2)}x</span>
+                  <span style={{ fontSize: '9px', fontWeight: 700, color: '#5B6E89' }}>{formatMultiplierDelta(mult)}</span>
+                </span>
               </div>
             ))}
           </div>

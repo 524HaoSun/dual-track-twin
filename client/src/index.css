@@ -398,6 +398,38 @@ body::before {
     to   { stroke-dashoffset: 0; }
   }
 
+  @keyframes twinScan {
+    0%   { transform: translateX(-18%); opacity: 0; }
+    12%  { opacity: 0.6; }
+    50%  { opacity: 0.35; }
+    88%  { opacity: 0.6; }
+    100% { transform: translateX(118%); opacity: 0; }
+  }
+
+  @keyframes telemetryPulse {
+    0%, 100% { opacity: 0.45; transform: scaleX(0.72); }
+    50%      { opacity: 1; transform: scaleX(1); }
+  }
+
+  .twin-scan-line {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 18%;
+    pointer-events: none;
+    background: linear-gradient(90deg, transparent, rgba(14,165,233,0.18), transparent);
+    mix-blend-mode: screen;
+    animation: twinScan 6.5s ease-in-out infinite;
+  }
+
+  .telemetry-bar {
+    height: 2px;
+    border-radius: 99px;
+    transform-origin: left center;
+    background: linear-gradient(90deg, rgba(14,165,233,0.15), #0EA5E9, rgba(245,158,11,0.85));
+    animation: telemetryPulse 2.8s ease-in-out infinite;
+  }
+
   /* ── Scrollbar ───────────────────────────────────────────────────────────── */
   ::-webkit-scrollbar { width: 4px; height: 4px; }
   ::-webkit-scrollbar-track { background: transparent; }

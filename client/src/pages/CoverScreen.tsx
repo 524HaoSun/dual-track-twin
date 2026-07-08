@@ -324,11 +324,11 @@ export function CoverScreen() {
           aria-hidden="true"
           style={{
             position: 'absolute',
-            top: '3%',
-            bottom: '3%',
+            top: '4%',
+            bottom: '4%',
             left: '50%',
-            width: '112%',
-            height: '94%',
+            width: '106%',
+            height: '92%',
             objectFit: 'cover',
             objectPosition: 'center center',
             transform: 'translateX(-50%)',
@@ -353,6 +353,39 @@ export function CoverScreen() {
             background: 'linear-gradient(to bottom, transparent, rgba(14,165,233,0.22), transparent)',
           }}
         />
+        <div className="twin-scan-line" style={{ left: 0, opacity: 0.38 }} />
+        <div
+          style={{
+            position: 'absolute',
+            right: '28px',
+            bottom: '24px',
+            width: '238px',
+            padding: '12px 13px',
+            borderRadius: '8px',
+            background: 'rgba(5,14,24,0.66)',
+            border: '1px solid rgba(14,165,233,0.24)',
+            boxShadow: '0 12px 36px rgba(0,0,0,0.28), inset 0 1px 0 rgba(255,255,255,0.05)',
+            backdropFilter: 'blur(10px)',
+            color: '#B9C8DC',
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '9px' }}>
+            <span style={{ fontSize: '9px', fontWeight: 850, letterSpacing: '0.11em', textTransform: 'uppercase', color: CYAN }}>Twin status</span>
+            <span style={{ fontSize: '10px', fontWeight: 750, color: '#10B981' }}>Synced</span>
+          </div>
+          <div className="telemetry-bar" style={{ marginBottom: '10px' }} />
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+            {[
+              ['CV-RMSE', '8.3%'],
+              ['Gap drivers', 'ranked'],
+            ].map(([label, value]) => (
+              <div key={label}>
+                <div style={{ fontSize: '9px', color: SUBTLE, marginBottom: '2px' }}>{label}</div>
+                <div style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '12px', fontWeight: 800, color: INK }}>{value}</div>
+              </div>
+            ))}
+          </div>
+        </div>
       </section>
     </div>
   );

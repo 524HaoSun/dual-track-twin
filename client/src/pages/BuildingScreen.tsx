@@ -156,7 +156,7 @@ function ExteriorBuilding({ autoRotate }: { autoRotate: boolean }) {
   );
 
   return (
-    <group ref={groupRef} position={[0, 0, 0]}>
+    <group ref={groupRef} position={[-3.7, 1.65, 0]} scale={0.55}>
       {/* ── GROUND PLANE — dark polished stone ──────────────────────────── */}
       <mesh position={[0, -0.05, 0]} receiveShadow>
         <boxGeometry args={[60, 0.1, 50]} />
@@ -988,8 +988,37 @@ function SensorNodeMesh({ sensor, onHover, onClick, gl, dimmed = false }: {
 }
 
 // ── Camera dolly animation ────────────────────────────────────────────────────
-// CameraController removed — it was overriding camera position every frame,
-// preventing OrbitControls zoom from working. OrbitControls handles camera now.
+function InitialCameraView({
+  interior,
+  orbitRef,
+}: {
+  interior: boolean;
+  orbitRef: React.MutableRefObject<any>;
+}) {
+  const { camera } = useThree();
+
+  useEffect(() => {
+    const applyView = () => {
+      const position = interior
+        ? new THREE.Vector3(6.5, 5.8, 7.5)
+        : new THREE.Vector3(0, 2.8, 16);
+      const target = interior
+        ? new THREE.Vector3(0, 4, 0)
+        : new THREE.Vector3(0, 2.4, 0);
+
+      camera.position.copy(position);
+      camera.lookAt(target);
+      orbitRef.current?.target.copy(target);
+      orbitRef.current?.update();
+    };
+
+    applyView();
+    const frame = window.requestAnimationFrame(applyView);
+    return () => window.cancelAnimationFrame(frame);
+  }, [camera, interior, orbitRef]);
+
+  return null;
+}
 
 // ── Interior 3D mini-window (right panel) ────────────────────────────────────
 function InteriorMiniCanvas({ activeSensorId, activeFloor }: { activeSensorId: string | null; activeFloor: 1 | 2 }) {
@@ -1201,7 +1230,7 @@ export function BuildingScreen() {
       <div style={{ flex: 1, position: 'relative' }}>
         <Canvas
           dpr={[1, 2]}
-          camera={{ position: [5.5, 3.5, 6.5], fov: 42 }}
+          camera={{ position: [0, 2.8, 16], fov: 40 }}
           shadows
           style={{ background: 'linear-gradient(180deg, #0A0F1A 0%, #0D1628 60%, #101E35 100%)' }}
           onPointerDown={() => setAutoRotate(false)}
@@ -1248,12 +1277,14 @@ export function BuildingScreen() {
             dampingFactor={0.08}
             rotateSpeed={0.7}
             zoomSpeed={1.0}
-            minDistance={interior ? 3 : 4}
-            maxDistance={interior ? 40 : 55}
-            target={interior ? [0, 4, 0] : [0, 2.5, 0]}
+            minDistance={interior ? 3 : 8}
+            maxDistance={interior ? 40 : 60}
+            target={interior ? [0, 4, 0] : [0, 2.4, 0]}
             maxPolarAngle={Math.PI / 1.6}
             onStart={() => setAutoRotate(false)}
           />
+
+          <InitialCameraView interior={interior} orbitRef={orbitRef} />
 
           <>
             {/* City environment map — provides realistic reflections on glass */}
@@ -1278,10 +1309,71 @@ export function BuildingScreen() {
           </>
         </Canvas>
 
+        {!interior && (
+          <>
+            <div className="twin-scan-line" style={{ left: 0, opacity: 0.28, zIndex: 4 }} />
+            <div
+              style={{
+                position: 'absolute',
+                left: '16px',
+                top: '16px',
+                zIndex: 5,
+                width: '260px',
+                padding: '12px 13px',
+                borderRadius: '8px',
+                background: 'rgba(6,14,24,0.68)',
+                border: '1px solid rgba(14,165,233,0.22)',
+                boxShadow: '0 12px 34px rgba(0,0,0,0.28), inset 0 1px 0 rgba(255,255,255,0.045)',
+                backdropFilter: 'blur(10px)',
+                pointerEvents: 'none',
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '9px' }}>
+                <span style={{ fontSize: '9px', fontWeight: 800, letterSpacing: '0.09em', textTransform: 'uppercase', color: '#0EA5E9' }}>
+                  Exterior twin scan
+                </span>
+                <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '10px', fontWeight: 800, color: '#10B981' }}>
+                  locked
+                </span>
+              </div>
+              <div className="telemetry-bar" style={{ marginBottom: '10px' }} />
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '9px', marginBottom: '10px' }}>
+                <div>
+                  <div style={{ fontSize: '8px', letterSpacing: '0.06em', textTransform: 'uppercase', color: '#3D4F6A', marginBottom: '2px' }}>Mesh</div>
+                  <div style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '11px', fontWeight: 800, color: '#E8EDF5' }}>shell-01</div>
+                </div>
+                <div>
+                  <div style={{ fontSize: '8px', letterSpacing: '0.06em', textTransform: 'uppercase', color: '#3D4F6A', marginBottom: '2px' }}>Glazing</div>
+                  <div style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '11px', fontWeight: 800, color: '#E8EDF5' }}>clear</div>
+                </div>
+              </div>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+                {['PV aligned', 'entrance linked', 'sensor-ready'].map(label => (
+                  <span
+                    key={label}
+                    style={{
+                      padding: '4px 7px',
+                      borderRadius: '999px',
+                      background: 'rgba(255,255,255,0.045)',
+                      border: '1px solid rgba(255,255,255,0.08)',
+                      color: '#9FB3CB',
+                      fontSize: '9px',
+                      fontWeight: 700,
+                    }}
+                  >
+                    {label}
+                  </span>
+                ))}
+              </div>
+            </div>
+          </>
+        )}
+
         {/* Auto-rotate hint */}
         {autoRotate && (
           <div style={{
             position: 'absolute', top: '14px', left: '50%', transform: 'translateX(-50%)',
+            zIndex: 5,
             fontSize: '9px', color: '#3D4F6A',
             background: 'rgba(10,14,20,0.7)', padding: '3px 10px', borderRadius: '4px',
           }}>
