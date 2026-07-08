@@ -98,10 +98,10 @@ function ExteriorBuilding({ autoRotate }: { autoRotate: boolean }) {
   const roofMat = <meshStandardMaterial color="#2E3A4A" roughness={0.55} metalness={0.12} />;
   const glassMat = (
     <meshPhysicalMaterial
-      color="#B8DCF8" transparent opacity={0.45}
+      color="#7DD3FC" transparent opacity={0.24}
       roughness={0.02} metalness={0.0}
-      envMapIntensity={4.0} transmission={0.55} ior={1.52} reflectivity={0.98}
-      thickness={0.5}
+      envMapIntensity={3.4} transmission={0.88} ior={1.52} reflectivity={0.55}
+      thickness={0.08} side={THREE.DoubleSide}
     />
   );
   const frameColor = "#8A9AB0";
@@ -129,11 +129,32 @@ function ExteriorBuilding({ autoRotate }: { autoRotate: boolean }) {
           <meshStandardMaterial color={frameColor} roughness={0.25} metalness={0.75} />
         </mesh>
       ))}
-      {/* Interior warm glow */}
-      <mesh position={[0, 0, -0.1]}>
-        <boxGeometry args={[w - 0.15, h - 0.15, 0.02]} />
-        <meshStandardMaterial color="#FFF3C4" emissive="#F59E0B" emissiveIntensity={0.6} roughness={1.0} />
+      {/* Recessed interior void gives the glass real depth instead of a flat closed panel */}
+      <mesh position={[0, 0, -0.08]}>
+        <boxGeometry args={[w - 0.16, h - 0.16, 0.03]} />
+        <meshStandardMaterial color="#07111D" emissive="#0B1B2A" emissiveIntensity={0.45} roughness={0.95} />
       </mesh>
+      {/* Soft interior light strips visible through the glazing */}
+      {[-h * 0.22, h * 0.22].map((ly, i) => (
+        <mesh key={`light${i}`} position={[0, ly, -0.045]}>
+          <boxGeometry args={[w - 0.35, 0.035, 0.025]} />
+          <meshStandardMaterial
+            color="#FFE8B5"
+            emissive="#F59E0B"
+            emissiveIntensity={1.2}
+            transparent
+            opacity={0.68}
+            roughness={0.25}
+          />
+        </mesh>
+      ))}
+      {/* Low furniture silhouettes keep the interior readable without over-detailing */}
+      {[-0.28, 0.28].map((fx, i) => (
+        <mesh key={`desk${i}`} position={[fx * w, -h * 0.34, -0.04]}>
+          <boxGeometry args={[Math.min(0.42, w * 0.22), 0.08, 0.06]} />
+          <meshStandardMaterial color="#111827" roughness={0.75} metalness={0.05} />
+        </mesh>
+      ))}
     </group>
   );
 
@@ -233,10 +254,26 @@ function ExteriorBuilding({ autoRotate }: { autoRotate: boolean }) {
               <boxGeometry args={[0.04, 1.2, 1.0]} />
               {glassMat}
             </mesh>
-            {/* Window frame */}
-            <mesh>
-              <boxGeometry args={[0.06, 1.3, 1.1]} />
-              <meshStandardMaterial color={frameColor} roughness={0.3} metalness={0.6} />
+            <mesh position={[-0.035, 0, 0]}>
+              <boxGeometry args={[0.025, 1.05, 0.86]} />
+              <meshStandardMaterial color="#07111D" emissive="#0B1B2A" emissiveIntensity={0.35} roughness={0.9} />
+            </mesh>
+            {/* Window frame strips */}
+            {[-0.55, 0.55].map(fz => (
+              <mesh key={`vf${fz}`} position={[0.035, 0, fz]}>
+                <boxGeometry args={[0.06, 1.3, 0.045]} />
+                <meshStandardMaterial color={frameColor} roughness={0.3} metalness={0.6} />
+              </mesh>
+            ))}
+            {[-0.65, 0, 0.65].map(fy => (
+              <mesh key={`hf${fy}`} position={[0.035, fy, 0]}>
+                <boxGeometry args={[0.06, 0.045, 1.1]} />
+                <meshStandardMaterial color={frameColor} roughness={0.3} metalness={0.6} />
+              </mesh>
+            ))}
+            <mesh position={[0.045, 0.28, 0]}>
+              <boxGeometry args={[0.018, 0.035, 0.72]} />
+              <meshStandardMaterial color="#FFE8B5" emissive="#F59E0B" emissiveIntensity={0.9} transparent opacity={0.62} roughness={0.25} />
             </mesh>
             {/* Sunshade above */}
             <mesh position={[0.2, 0.72, 0]}>
