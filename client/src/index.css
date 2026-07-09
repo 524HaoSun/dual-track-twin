@@ -449,41 +449,41 @@ body::before {
     animation: telemetryPulse 2.8s ease-in-out infinite;
   }
 
-  .scan-hotspot {
-    position: absolute;
-    z-index: 6;
-    display: inline-flex;
-    align-items: center;
-    gap: 7px;
-    height: 26px;
-    padding: 0 10px 0 8px;
+  .model-hotspot-pin {
+    width: 21px;
+    height: 21px;
+    padding: 0;
     border-radius: 999px;
-    border: 1px solid rgba(14,165,233,0.26);
-    background: rgba(5,14,24,0.7);
-    color: #B9C8DC;
-    font-size: 10px;
-    font-weight: 800;
-    letter-spacing: 0.015em;
-    backdrop-filter: blur(10px);
-    transform: translate(-50%, -50%);
-    transition: border-color 160ms ease, background 160ms ease, color 160ms ease, transform 160ms ease;
+    border: 1px solid rgba(14,165,233,0.54);
+    background: rgba(5,14,24,0.62);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    backdrop-filter: blur(8px);
+    box-shadow: 0 0 12px rgba(14,165,233,0.22), inset 0 1px 0 rgba(255,255,255,0.12);
+    transition: transform 160ms ease, border-color 160ms ease, background 160ms ease;
   }
 
-  .scan-hotspot:hover,
-  .scan-hotspot-active {
-    border-color: rgba(14,165,233,0.7);
-    background: rgba(6,20,34,0.88);
-    color: #E8EDF5;
-    transform: translate(-50%, -50%) scale(1.04);
+  .model-hotspot-pin:hover,
+  .model-hotspot-pin-active {
+    border-color: rgba(245,158,11,0.85);
+    background: rgba(8,21,34,0.88);
+    transform: scale(1.12);
   }
 
-  .scan-hotspot-dot {
-    width: 8px;
-    height: 8px;
+  .model-hotspot-core {
+    width: 7px;
+    height: 7px;
     border-radius: 999px;
     background: #0EA5E9;
-    box-shadow: 0 0 10px rgba(14,165,233,0.75);
+    box-shadow: 0 0 10px rgba(14,165,233,0.9);
     animation: hotspotPulse 2.2s ease-in-out infinite;
+  }
+
+  .model-hotspot-pin-active .model-hotspot-core {
+    background: #F59E0B;
+    box-shadow: 0 0 14px rgba(245,158,11,0.9);
   }
 
   .data-packet {

@@ -8,7 +8,7 @@
  */
 import React, { useRef, useState, useEffect, useCallback } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
-import { OrbitControls, ContactShadows } from '@react-three/drei';
+import { OrbitControls, ContactShadows, Html } from '@react-three/drei';
 import * as THREE from 'three';
 import { useNav } from '@/contexts/NavContext';
 
@@ -70,8 +70,7 @@ const EXTERIOR_HOTSPOTS = [
     title: 'Facade layer',
     value: 'visible',
     desc: 'Transparent curtain-wall surfaces are linked to the envelope assumptions used by the energy model.',
-    x: '43%',
-    y: '68%',
+    position: [0.5, 3.2, 3.38] as [number, number, number],
   },
   {
     id: 'entrance',
@@ -79,8 +78,7 @@ const EXTERIOR_HOTSPOTS = [
     title: 'Access node',
     value: 'linked',
     desc: 'Entrance canopy and steps are aligned with the building shell, making the model read as one connected asset.',
-    x: '49%',
-    y: '82%',
+    position: [0, 2.55, 4.95] as [number, number, number],
   },
   {
     id: 'pv',
@@ -88,12 +86,12 @@ const EXTERIOR_HOTSPOTS = [
     title: 'Roof layer',
     value: 'aligned',
     desc: 'Roof-mounted PV is placed on the flat roof zone as a visible renewable-energy feature.',
-    x: '66%',
-    y: '55%',
+    position: [2.35, 6.0, 0.72] as [number, number, number],
   },
 ] as const;
 
 type ExteriorHotspotId = typeof EXTERIOR_HOTSPOTS[number]['id'];
+type ExteriorHotspot = typeof EXTERIOR_HOTSPOTS[number];
 
 // ── Window helper — warm amber glow ──────────────────────────────────────────
 function WindowPane({ position, width = 0.28, height = 0.22, rotation }: {
@@ -118,7 +116,41 @@ function WindowPane({ position, width = 0.28, height = 0.22, rotation }: {
 }
 
 // ── Revit-style school building — detailed exterior ──────────────────────────
-function ExteriorBuilding({ autoRotate }: { autoRotate: boolean }) {
+function ExteriorHotspotPin({
+  hotspot,
+  active,
+  onSelect,
+}: {
+  hotspot: ExteriorHotspot;
+  active: boolean;
+  onSelect: (id: ExteriorHotspotId) => void;
+}) {
+  return (
+    <Html position={hotspot.position} center distanceFactor={14} zIndexRange={[12, 0]}>
+      <button
+        className={`model-hotspot-pin ${active ? 'model-hotspot-pin-active' : ''}`}
+        aria-label={hotspot.label}
+        onClick={event => {
+          event.stopPropagation();
+          onSelect(hotspot.id);
+        }}
+        onMouseEnter={() => onSelect(hotspot.id)}
+      >
+        <span className="model-hotspot-core" />
+      </button>
+    </Html>
+  );
+}
+
+function ExteriorBuilding({
+  autoRotate,
+  activeHotspot,
+  onHotspotSelect,
+}: {
+  autoRotate: boolean;
+  activeHotspot: ExteriorHotspotId;
+  onHotspotSelect: (id: ExteriorHotspotId) => void;
+}) {
   const groupRef = useRef<THREE.Group>(null);
   useFrame((_, delta) => {
     if (autoRotate && groupRef.current) groupRef.current.rotation.y += delta * 0.08;
@@ -452,6 +484,14 @@ function ExteriorBuilding({ autoRotate }: { autoRotate: boolean }) {
       ))}
       {/* Entrance canopy light */}
       <pointLight position={[0, 3.0, 4.8]} intensity={1.2} color="#FFF3C4" distance={5} />
+      {EXTERIOR_HOTSPOTS.map(hotspot => (
+        <ExteriorHotspotPin
+          key={hotspot.id}
+          hotspot={hotspot}
+          active={hotspot.id === activeHotspot}
+          onSelect={onHotspotSelect}
+        />
+      ))}
     </group>
   );
 }
@@ -1324,7 +1364,11 @@ export function BuildingScreen() {
           <>
             {/* City environment map — provides realistic reflections on glass */}
             {!interior ? (
-              <ExteriorBuilding autoRotate={autoRotate} />
+              <ExteriorBuilding
+                autoRotate={autoRotate}
+                activeHotspot={activeExteriorHotspot}
+                onHotspotSelect={setActiveExteriorHotspot}
+              />
             ) : (
               <InteriorBuilding
                 autoRotate={autoRotate}
@@ -1362,23 +1406,6 @@ export function BuildingScreen() {
                 }}
               />
             ))}
-            {EXTERIOR_HOTSPOTS.map(hotspot => {
-              const active = hotspot.id === activeExteriorHotspot;
-              return (
-                <button
-                  key={hotspot.id}
-                  className={`scan-hotspot ${active ? 'scan-hotspot-active' : ''}`}
-                  style={{ left: hotspot.x, top: hotspot.y }}
-                  onClick={() => setActiveExteriorHotspot(hotspot.id)}
-                  onMouseEnter={() => setActiveExteriorHotspot(hotspot.id)}
-                  title={hotspot.desc}
-                  aria-label={hotspot.label}
-                >
-                  <span className="scan-hotspot-dot" />
-                  <span>{hotspot.label}</span>
-                </button>
-              );
-            })}
             <div
               style={{
                 position: 'absolute',
