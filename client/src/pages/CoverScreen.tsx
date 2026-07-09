@@ -354,6 +354,22 @@ export function CoverScreen() {
           }}
         />
         <div className="twin-scan-line" style={{ left: 0, opacity: 0.38 }} />
+        {[
+          { left: '35%', top: '44%', delay: '0s' },
+          { left: '51%', top: '58%', delay: '1.15s' },
+          { left: '62%', top: '70%', delay: '2.05s' },
+        ].map((packet, index) => (
+          <span
+            key={index}
+            className="data-packet"
+            style={{
+              left: packet.left,
+              top: packet.top,
+              animationDelay: packet.delay,
+              opacity: 0.72,
+            }}
+          />
+        ))}
         <div
           style={{
             position: 'absolute',

@@ -63,6 +63,38 @@ const C = {
   cyan:       '#0EA5E9',
 };
 
+const EXTERIOR_HOTSPOTS = [
+  {
+    id: 'glazing',
+    label: 'Glazing',
+    title: 'Facade layer',
+    value: 'visible',
+    desc: 'Transparent curtain-wall surfaces are linked to the envelope assumptions used by the energy model.',
+    x: '43%',
+    y: '68%',
+  },
+  {
+    id: 'entrance',
+    label: 'Entrance',
+    title: 'Access node',
+    value: 'linked',
+    desc: 'Entrance canopy and steps are aligned with the building shell, making the model read as one connected asset.',
+    x: '49%',
+    y: '82%',
+  },
+  {
+    id: 'pv',
+    label: 'PV array',
+    title: 'Roof layer',
+    value: 'aligned',
+    desc: 'Roof-mounted PV is placed on the flat roof zone as a visible renewable-energy feature.',
+    x: '66%',
+    y: '55%',
+  },
+] as const;
+
+type ExteriorHotspotId = typeof EXTERIOR_HOTSPOTS[number]['id'];
+
 // ── Window helper — warm amber glow ──────────────────────────────────────────
 function WindowPane({ position, width = 0.28, height = 0.22, rotation }: {
   position: [number, number, number];
@@ -1169,6 +1201,7 @@ export function BuildingScreen() {
   const [selectedSensor, setSelectedSensor] = useState<string | null>(null);
   const [activeFloor, setActiveFloor] = useState<1 | 2>(1);
   const [furnitureTip, setFurnitureTip] = useState<{ label: string; pos: { x: number; y: number } } | null>(null);
+  const [activeExteriorHotspot, setActiveExteriorHotspot] = useState<ExteriorHotspotId>('entrance');
   const orbitRef = useRef<any>(null);
 
   // Register reset function for global R-key
@@ -1180,6 +1213,7 @@ export function BuildingScreen() {
       setHoveredSensor(null);
       setPinnedTooltipPos(null);
       setActiveFloor(1);
+      setActiveExteriorHotspot('entrance');
     };
     return () => { _buildingResetFn = null; };
   }, []);
@@ -1210,6 +1244,7 @@ export function BuildingScreen() {
 
   const displayTooltipPos = selectedSensor ? pinnedTooltipPos : tooltipPos;
   const showTooltip = (selectedSensor || hoveredSensor) && activeSensor && displayTooltipPos;
+  const exteriorHotspot = EXTERIOR_HOTSPOTS.find(item => item.id === activeExteriorHotspot) ?? EXTERIOR_HOTSPOTS[1];
 
   return (
     <div style={{
@@ -1312,6 +1347,38 @@ export function BuildingScreen() {
         {!interior && (
           <>
             <div className="twin-scan-line" style={{ left: 0, opacity: 0.28, zIndex: 4 }} />
+            {[
+              { left: '33%', top: '60%', delay: '0s' },
+              { left: '47%', top: '74%', delay: '1.25s' },
+              { left: '58%', top: '50%', delay: '2.1s' },
+            ].map((packet, index) => (
+              <span
+                key={index}
+                className="data-packet"
+                style={{
+                  left: packet.left,
+                  top: packet.top,
+                  animationDelay: packet.delay,
+                }}
+              />
+            ))}
+            {EXTERIOR_HOTSPOTS.map(hotspot => {
+              const active = hotspot.id === activeExteriorHotspot;
+              return (
+                <button
+                  key={hotspot.id}
+                  className={`scan-hotspot ${active ? 'scan-hotspot-active' : ''}`}
+                  style={{ left: hotspot.x, top: hotspot.y }}
+                  onClick={() => setActiveExteriorHotspot(hotspot.id)}
+                  onMouseEnter={() => setActiveExteriorHotspot(hotspot.id)}
+                  title={hotspot.desc}
+                  aria-label={hotspot.label}
+                >
+                  <span className="scan-hotspot-dot" />
+                  <span>{hotspot.label}</span>
+                </button>
+              );
+            })}
             <div
               style={{
                 position: 'absolute',
@@ -1337,6 +1404,23 @@ export function BuildingScreen() {
                 </span>
               </div>
               <div className="telemetry-bar" style={{ marginBottom: '10px' }} />
+              <div
+                style={{
+                  marginBottom: '10px',
+                  padding: '9px 10px',
+                  borderRadius: '8px',
+                  background: 'rgba(14,165,233,0.055)',
+                  border: '1px solid rgba(14,165,233,0.16)',
+                }}
+              >
+                <div style={{ display: 'flex', justifyContent: 'space-between', gap: '10px', marginBottom: '4px' }}>
+                  <span style={{ fontSize: '10px', fontWeight: 850, color: '#E8EDF5' }}>{exteriorHotspot.title}</span>
+                  <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '10px', fontWeight: 850, color: '#0EA5E9' }}>{exteriorHotspot.value}</span>
+                </div>
+                <div style={{ fontSize: '9px', lineHeight: 1.45, color: '#8A9BB5' }}>
+                  {exteriorHotspot.desc}
+                </div>
+              </div>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '9px', marginBottom: '10px' }}>
                 <div>
                   <div style={{ fontSize: '8px', letterSpacing: '0.06em', textTransform: 'uppercase', color: '#3D4F6A', marginBottom: '2px' }}>Mesh</div>

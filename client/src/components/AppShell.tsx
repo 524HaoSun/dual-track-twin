@@ -62,10 +62,79 @@ const NAV_ITEMS: { id: Screen; icon: React.ElementType; label: string; step?: nu
 ];
 
 const STEP_SCREENS: Partial<Record<Screen, number>> = { act1: 1, act2: 2, act3: 3 };
+const STORY_ITEMS: { id: Screen; icon: React.ElementType; label: string }[] = [
+  { id: 'act1', icon: TrendingUp, label: 'Predict' },
+  { id: 'act2', icon: Sliders, label: 'Calibrate' },
+  { id: 'act3', icon: Activity, label: 'Feedback' },
+];
+
+function StoryProgress({
+  screen,
+  onSelect,
+}: {
+  screen: Screen;
+  onSelect: (screen: Screen) => void;
+}) {
+  const activeIndex = STORY_ITEMS.findIndex(item => item.id === screen);
+
+  return (
+    <div
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+        gap: '4px',
+        padding: '3px',
+        borderRadius: '999px',
+        background: 'rgba(255,255,255,0.035)',
+        border: '1px solid rgba(255,255,255,0.07)',
+        boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.035)',
+      }}
+    >
+      {STORY_ITEMS.map(({ id, icon: Icon, label }, index) => {
+        const active = screen === id;
+        const complete = activeIndex > index;
+        return (
+          <button
+            key={id}
+            onClick={() => onSelect(id)}
+            title={label}
+            aria-label={label}
+            style={{
+              position: 'relative',
+              overflow: 'hidden',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '5px',
+              height: '24px',
+              padding: '0 9px',
+              borderRadius: '999px',
+              border: '1px solid transparent',
+              background: active
+                ? 'rgba(14,165,233,0.16)'
+                : complete
+                ? 'rgba(16,185,129,0.08)'
+                : 'transparent',
+              color: active ? '#0EA5E9' : complete ? '#10B981' : '#64748B',
+              fontSize: '10px',
+              fontWeight: 800,
+              cursor: 'pointer',
+              transition: 'background 160ms ease, color 160ms ease, border-color 160ms ease',
+            }}
+          >
+            {active && <span className="story-node-sweep" />}
+            {React.createElement(Icon as any, { size: 11, style: { position: 'relative', zIndex: 1 } })}
+            <span style={{ position: 'relative', zIndex: 1 }}>{index + 1}</span>
+            <span style={{ position: 'relative', zIndex: 1 }}>{label}</span>
+          </button>
+        );
+      })}
+    </div>
+  );
+}
 
 // ── Top bar ───────────────────────────────────────────────────────────────────
 function TopBar() {
-  const { screen, setAssistantOpen, assistantOpen } = useNav();
+  const { screen, setScreen, setAssistantOpen, assistantOpen } = useNav();
   const step = STEP_SCREENS[screen];
 
   const screenLabel: Partial<Record<Screen, string>> = {
@@ -100,6 +169,8 @@ function TopBar() {
           {screenLabel[screen] ?? ''}
         </span>
       )}
+
+      <StoryProgress screen={screen} onSelect={setScreen} />
 
       <div className="flex-1" />
 
