@@ -238,10 +238,13 @@ export function CoverScreen() {
             Digital Twin Demo
           </h1>
           <div style={{ fontSize: '15px', fontWeight: 850, color: CYAN, marginBottom: '16px', letterSpacing: '0.005em' }}>
-            ZEBAI Research Fellow Interview (BO4-O7355)
+            Building Energy Intelligence Demo
           </div>
-          <div style={{ fontSize: '16px', fontWeight: 700, color: '#B9C8DC', marginBottom: '22px' }}>
-            Dr Hao Sun <span style={{ color: SUBTLE, padding: '0 8px' }}>&middot;</span> 9 July 2026
+          <div style={{ fontSize: '16px', fontWeight: 700, color: '#B9C8DC', marginBottom: '8px' }}>
+            Created by Dr Hao Sun
+          </div>
+          <div style={{ fontSize: '12px', fontWeight: 650, color: MUTED, marginBottom: '22px', lineHeight: 1.5 }}>
+            hao.sun@surrey.ac.uk <span style={{ color: SUBTLE, padding: '0 7px' }}>&middot;</span> 13705161072sh@gmail.com
           </div>
           <p style={{ fontSize: '14px', color: MUTED, lineHeight: 1.62, maxWidth: '430px', marginBottom: '30px' }}>
             Bridging design intent and operational reality, quantifying the performance gap, then explaining why.
@@ -304,7 +307,7 @@ export function CoverScreen() {
               color: SUBTLE,
             }}
           >
-            <span>Dr Hao Sun &middot; ZEBAI</span>
+            <span>Created by Dr Hao Sun</span>
             <span>Building Data Genome Project 2 &middot; LightGBM</span>
           </div>
         </footer>
