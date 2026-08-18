@@ -249,7 +249,7 @@ export function CoverScreen() {
           <p style={{ fontSize: '14px', color: MUTED, lineHeight: 1.62, maxWidth: '430px', marginBottom: '30px' }}>
             Bridging design intent and operational reality, quantifying the performance gap, then explaining why.
           </p>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+          <div style={{ display: 'flex', alignItems: 'center' }}>
             <button
               onClick={() => setScreen('building')}
               className="btn-primary"
@@ -259,13 +259,6 @@ export function CoverScreen() {
               <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
                 <path d="M3 8h9M8.5 4.2 12.3 8l-3.8 3.8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
-            </button>
-            <button
-              onClick={() => setScreen('flow')}
-              className="btn-ghost"
-              style={{ fontSize: '14px', fontWeight: 700, padding: '13px 24px', borderRadius: '8px', color: MUTED }}
-            >
-              How it works
             </button>
           </div>
         </main>
